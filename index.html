@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Travel Planner</title>
+    <!-- Preload Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            /* Indigo 500 */
+            --primary-hover: #4f46e5;
+            --secondary-color: #14b8a6;
+            /* Teal 500 */
+            --bg-color: #f3f4f6;
+            /* Gray 100 */
+            --surface-color: #ffffff;
+            --text-main: #1f2937;
+            /* Gray 800 */
+            --text-muted: #6b7280;
+            /* Gray 500 */
+            --border-color: #e5e7eb;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        /* Components */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-decoration: none;
+            font-size: 0.95rem;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.25);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .btn-danger {
+            background-color: #fee2e2;
+            color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #fecaca;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.625rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+            transition: border-color 0.15s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .grid-trips {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #e5e7eb;
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.25rem;
+        }
+
+        .modal-footer {
+            padding: 1.25rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <a href="#" class="nav-brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
+                    <path d="M15 10l5 5"></path>
+                </svg>
+                TravelPlanner
+            </a>
+            <div id="nav-links" class="nav-menu hidden">
+                <span id="nav-user-name" style="font-weight:500; color: var(--primary-color)"></span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Login View -->
+            <section id="view-login" class="view-section hidden">
+                <div style="max-width: 400px; margin: 4rem auto; text-align: center;">
+                    <h2 class="mb-4">Welcome Back</h2>
+                    <form onsubmit="handleLogin(event)" class="card" style="text-align: left;">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="login-email" class="form-control" required
+                                placeholder="user@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="login-password" class="form-control" required
+                                placeholder="******">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%">Sign In</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Dashboard View -->
+            <section id="view-dashboard" class="view-section hidden">
+                <div class="flex-between mb-4">
+                    <h1>My Trips</h1>
+                    <button class="btn btn-primary" onclick="openCreateTripModal()">+ New Trip</button>
+                </div>
+                <div id="trip-list" class="grid-trips">
+                    <!-- Trips Rendered Here -->
+                </div>
+            </section>
+
+            <!-- Trip Detail View -->
+            <section id="view-trip-detail" class="view-section hidden">
+                <button class="btn btn-secondary mb-4" onclick="navigateTo('dashboard')">← Back to Dashboard</button>
+
+                <div id="detail-loading" class="spinner"></div>
+
+                <div id="detail-content" class="hidden">
+                    <div class="card mb-4"
+                        style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); color: white;">
+                        <h2 id="d-title" style="color:white; margin-bottom: 0.5rem">Title</h2>
+                        <p id="d-meta" style="color: rgba(255,255,255,0.8)">Date</p>
+                    </div>
+
+                    <div class="flex-between mb-4">
+                        <h3>Itinerary</h3>
+                        <button class="btn btn-primary" onclick="alert('TODO: Add Items UI')">+ Add Activity</button>
+                    </div>
+
+                    <div id="itinerary-list">
+                        <!-- Items -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="create-trip-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Create New Trip</h3>
+                <button class="close-btn" onclick="closeModal('create-trip-modal')">&times;</button>
+            </div>
+            <form onsubmit="handleCreateTrip(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Trip Title</label>
+                        <input type="text" id="new-trip-title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="new-trip-desc" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" id="new-trip-date" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('create-trip-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Trip</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Frontend Logic
+         */
+
+        // --- Configuration ---
+        const CONFIG = {
+            // [IMPORTANT] Replace with your actual GAS Web App URL
+            API_URL: 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'
+        };
+
+        // --- App State ---
+        const App = {
+            user: JSON.parse(localStorage.getItem('travel_user')) || null,
+            currentTrip: null
+        };
+
+        // --- DOM Utils ---
+        const $ = (s) => document.querySelector(s);
+        const $all = (s) => document.querySelectorAll(s);
+        const html = (strings, ...values) => String.raw({ raw: strings }, ...values);
+
+        // XSS Protection
+        const escapeHtml = (unsafe) => {
+            if (typeof unsafe !== 'string') return unsafe;
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
+        // --- API Bridge (Fetch) ---
+        const api = {
+            call: async (action, data = {}) => {
+                showLoading(true);
+                try {
+                    // Ensure API URL is configured
+                    if (CONFIG.API_URL.includes('YOUR_SCRIPT_ID')) {
+                        const url = prompt('Please enter your Google Apps Script Web App URL:', '');
+                        if (url) {
+                            CONFIG.API_URL = url;
+                            // Determine if we should save this for debugging? No, just run.
+                        } else {
+                            throw new Error('API URL not configured');
+                        }
+                    }
+
+                    // Add action and token to payload
+                    const payload = { ...data, action };
+                    if (App.user && App.user.auth_token) {
+                        payload.token = App.user.auth_token;
+                    }
+
+                    const response = await fetch(CONFIG.API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    showLoading(false);
+
+                    if (result.status === 'success') {
+                        return result.data;
+                    } else {
+                        if (result.message === 'Unauthorized' || result.message === 'Invalid credentials') {
+                            if (action !== 'login') logout();
+                        }
+                        showToast(result.message, 'error');
+                        throw new Error(result.message);
+                    }
+                } catch (err) {
+                    showLoading(false);
+                    console.error(err);
+                    showToast('API Error: ' + err.message, 'error');
+                    throw err;
+                }
+            }
+        };
+
+        // --- View Router ---
+        function navigateTo(viewId) {
+            // Hide all views
+            $all('.view-section').forEach(el => el.classList.add('hidden'));
+
+            // Auth Check
+            if (viewId !== 'login' && !App.user) {
+                navigateTo('login');
+                return;
+            }
+
+            // Show target view
+            const target = $(`#view-${viewId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                // Trigger init hooks
+                if (viewId === 'dashboard') loadDashboard();
+            }
+
+            updateNav();
+        }
+
+        function updateNav() {
+            if (App.user) {
+                $('#nav-user-name').textContent = App.user.display_name || App.user.email;
+                $('#nav-links').classList.remove('hidden');
+            } else {
+                $('#nav-links').classList.add('hidden');
+            }
+        }
+
+        // --- Views Logic ---
+
+        // Login View
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = $('#login-email').value;
+            const password = $('#login-password').value;
+
+            try {
+                const user = await api.call('login', { email, password });
+                App.user = user;
+                localStorage.setItem('travel_user', JSON.stringify(user));
+                showToast('Welcome back!');
+                navigateTo('dashboard');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function logout() {
+            App.user = null;
+            localStorage.removeItem('travel_user');
+            navigateTo('login');
+        }
+
+        // Dashboard View
+        async function loadDashboard() {
+            $('#trip-list').innerHTML = '<div class="spinner"></div>';
+            try {
+                // No need to send owner_id, backend derives it from token
+                const trips = await api.call('getTrips');
+                renderTripList(trips);
+            } catch (err) {
+                $('#trip-list').innerHTML = '<p class="text-center text-muted">Failed to load trips.</p>';
+            }
+        }
+
+        function renderTripList(trips) {
+            const container = $('#trip-list');
+            if (trips.length === 0) {
+                container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                <p>No trips found. Create your first one!</p>
+                <button class="btn btn-primary" onclick="openCreateTripModal()">Create Trip</button>
+            </div>`;
+                return;
+            }
+
+            container.innerHTML = trips.map(trip => `
+        <div class="card" onclick="openTripDetails('${trip.id}')">
+            <h3>${escapeHtml(trip.title)}</h3>
+            <p>${escapeHtml(trip.description || 'No description')}</p>
+            <div class="flex-between" style="margin-top: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+               <span>${new Date(trip.start_date).toLocaleDateString()}</span>
+               <span>${escapeHtml(trip.status || 'Planned')}</span>
+            </div>
+        </div>
+    `).join('');
+        }
+
+        async function handleCreateTrip(e) {
+            e.preventDefault();
+            const data = {
+                // owner_id derived by backend
+                title: $('#new-trip-title').value,
+                description: $('#new-trip-desc').value,
+                start_date: $('#new-trip-date').value
+            };
+
+            try {
+                await api.call('createTrip', data);
+                closeModal('create-trip-modal');
+                loadDashboard();
+                showToast('Trip created successfully');
+            } catch (err) {
+                // handled in api
+            }
+        }
+
+        // Trip Details Logic
+        async function openTripDetails(tripId) {
+            $('#view-dashboard').classList.add('hidden');
+            $('#view-trip-detail').classList.remove('hidden');
+
+            $('#detail-loading').classList.remove('hidden');
+            $('#detail-content').classList.add('hidden');
+
+            try {
+                const trip = await api.call('getTripDetails', { trip_id: tripId });
+                App.currentTrip = trip;
+                renderTripDetail(trip);
+            } catch (err) {
+                showToast('Failed to load details', 'error');
+                navigateTo('dashboard');
+            }
+        }
+
+        function renderTripDetail(trip) {
+            $('#detail-loading').classList.add('hidden');
+            $('#detail-content').classList.remove('hidden');
+
+            $('#d-title').textContent = trip.title; // Secure
+            $('#d-meta').textContent = `${new Date(trip.start_date).toLocaleDateString()} - ${trip.description || ''}`; // Secure
+
+            const list = $('#itinerary-list');
+            list.innerHTML = (trip.items || []).map(item => `
+        <div class="card mb-4 flex-between">
+            <div>
+                <h4>Day ${item.day_index}: ${escapeHtml(item.title || 'Untitled')}</h4>
+                <p style="margin:0">${escapeHtml(item.location_name || '')}</p>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteItem('${item.id}')">Delete</button>
+        </div>
+    `).join('');
+        }
+
+
+        // --- UI Utilities ---
+
+        function showLoading(show) {
+            // Global spinner or bar could be added
+        }
+
+        function showToast(msg, type = 'success') {
+            const el = document.createElement('div');
+            el.style.cssText = `
+        position: fixed; bottom: 20px; right: 20px;
+        background: ${type === 'error' ? '#ef4444' : '#10b981'};
+        color: white; padding: 1rem 2rem; border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 100;
+        animation: slideIn 0.3s ease-out;
+    `;
+            el.textContent = msg;
+            document.body.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        // Modal System
+        function openModal(id) {
+            $(`#${id}`).classList.add('active');
+        }
+        function closeModal(id) {
+            $(`#${id}`).classList.remove('active');
+        }
+        function openCreateTripModal() {
+            openModal('create-trip-modal');
+        }
+
+
+        // --- Init ---
+        window.addEventListener('load', () => {
+            // Check local storage
+            if (App.user) {
+                navigateTo('dashboard');
+            } else {
+                navigateTo('login');
+            }
+        });
+
+    </script>
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</body>
+
+</html>
