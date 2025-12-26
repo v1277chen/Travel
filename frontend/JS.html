@@ -1,0 +1,266 @@
+<script>
+    /**
+     * Frontend Logic
+     */
+
+    // --- App State ---
+    const App = {
+        user: JSON.parse(localStorage.getItem('travel_user')) || null,
+        currentTrip: null
+    };
+
+    // --- DOM Utils ---
+    const $ = (s) => document.querySelector(s);
+    const $all = (s) => document.querySelectorAll(s);
+    const html = (strings, ...values) => String.raw({ raw: strings }, ...values);
+
+    // --- API Bridge ---
+    const api = {
+        call: (action, data = {}) => {
+            showLoading(true);
+            return new Promise((resolve, reject) => {
+                if (typeof google === 'undefined') {
+                    console.error('GAS Environment not detected');
+                    alert('API not available (Not in GAS)');
+                    showLoading(false);
+                    reject('Not in GAS');
+                    return;
+                }
+
+                google.script.run
+                    .withSuccessHandler((responseString) => {
+                        showLoading(false);
+                        try {
+                            const res = JSON.parse(responseString);
+                            if (res.status === 'success') {
+                                resolve(res.data);
+                            } else {
+                                reject(res.message);
+                                showToast(res.message, 'error');
+                            }
+                        } catch (e) {
+                            console.error('Parse Error', e);
+                            reject(e);
+                        }
+                    })
+                    .withFailureHandler((err) => {
+                        showLoading(false);
+                        console.error('API Error', err);
+                        showToast('Network Error: ' + err, 'error');
+                        reject(err);
+                    })
+                    .apiRunner(action, data);
+            });
+        }
+    };
+
+    // --- View Router ---
+    function navigateTo(viewId) {
+        // Hide all views
+        $all('.view-section').forEach(el => el.classList.add('hidden'));
+
+        // Auth Check
+        if (viewId !== 'login' && !App.user) {
+            navigateTo('login');
+            return;
+        }
+
+        // Show target view
+        const target = $(`#view-${viewId}`);
+        if (target) {
+            target.classList.remove('hidden');
+            // Trigger init hooks
+            if (viewId === 'dashboard') loadDashboard();
+        }
+
+        updateNav();
+    }
+
+    function updateNav() {
+        if (App.user) {
+            $('#nav-user-name').textContent = App.user.display_name || App.user.email;
+            $('#nav-links').classList.remove('hidden');
+        } else {
+            $('#nav-links').classList.add('hidden');
+        }
+    }
+
+    // --- Views Logic ---
+
+    // Login View
+    async function handleLogin(e) {
+        e.preventDefault();
+        const email = $('#login-email').value;
+        const password = $('#login-password').value;
+
+        try {
+            const user = await api.call('login', { email, password });
+            App.user = user;
+            localStorage.setItem('travel_user', JSON.stringify(user));
+            showToast('Welcome back!');
+            navigateTo('dashboard');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function logout() {
+        App.user = null;
+        localStorage.removeItem('travel_user');
+        navigateTo('login');
+    }
+
+    // Dashboard View
+    async function loadDashboard() {
+        $('#trip-list').innerHTML = '<div class="spinner"></div>';
+        try {
+            const trips = await api.call('getTrips', { owner_id: App.user.email }); // Using email as ID for simple auth
+            renderTripList(trips);
+        } catch (err) {
+            $('#trip-list').innerHTML = '<p class="text-center text-muted">Failed to load trips.</p>';
+        }
+    }
+
+    function renderTripList(trips) {
+        const container = $('#trip-list');
+        if (trips.length === 0) {
+            container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                <p>No trips found. Create your first one!</p>
+                <button class="btn btn-primary" onclick="openCreateTripModal()">Create Trip</button>
+            </div>`;
+            return;
+        }
+
+        container.innerHTML = trips.map(trip => `
+        <div class="card" onclick="openTripDetails('${trip.id}')">
+            <h3>${trip.title}</h3>
+            <p>${trip.description || 'No description'}</p>
+            <div class="flex-between" style="margin-top: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+               <span>${new Date(trip.start_date).toLocaleDateString()}</span>
+               <span>${trip.status || 'Planned'}</span>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    async function handleCreateTrip(e) {
+        e.preventDefault();
+        const data = {
+            owner_id: App.user.email,
+            title: $('#new-trip-title').value,
+            description: $('#new-trip-desc').value,
+            start_date: $('#new-trip-date').value
+        };
+
+        try {
+            await api.call('createTrip', data);
+            closeModal('create-trip-modal');
+            loadDashboard();
+            showToast('Trip created successfully');
+        } catch (err) {
+            // handled in api
+        }
+    }
+
+    // Trip Details Logic
+    async function openTripDetails(tripId) {
+        // Ideally create a separate view, but for now simple alert or simple overlay
+        // Implementing full detail view:
+        $('#view-dashboard').classList.add('hidden');
+        $('#view-trip-detail').classList.remove('hidden');
+
+        $('#detail-loading').classList.remove('hidden');
+        $('#detail-content').classList.add('hidden');
+
+        try {
+            const trip = await api.call('getTripDetails', { trip_id: tripId });
+            App.currentTrip = trip;
+            renderTripDetail(trip);
+        } catch (err) {
+            showToast('Failed to load details', 'error');
+            navigateTo('dashboard');
+        }
+    }
+
+    function renderTripDetail(trip) {
+        $('#detail-loading').classList.add('hidden');
+        $('#detail-content').classList.remove('hidden');
+
+        $('#d-title').textContent = trip.title;
+        $('#d-meta').textContent = `${new Date(trip.start_date).toLocaleDateString()} - ${trip.description || ''}`;
+
+        const list = $('#itinerary-list');
+        list.innerHTML = (trip.items || []).map(item => `
+        <div class="card mb-4 flex-between">
+            <div>
+                <h4>Day ${item.day_index}: ${item.title}</h4>
+                <p style="margin:0">${item.location_name || ''}</p>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteItem('${item.id}')">Delete</button>
+        </div>
+    `).join('');
+    }
+
+
+    // --- UI Utilities ---
+
+    function showLoading(show) {
+        // Global spinner or bar could be added
+    }
+
+    function showToast(msg, type = 'success') {
+        // Simple alert replacement for now
+        // In production, append a toast element
+        const el = document.createElement('div');
+        el.style.cssText = `
+        position: fixed; bottom: 20px; right: 20px;
+        background: ${type === 'error' ? '#ef4444' : '#10b981'};
+        color: white; padding: 1rem 2rem; border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 100;
+        animation: slideIn 0.3s ease-out;
+    `;
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(() => {
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 300);
+        }, 3000);
+    }
+
+    // Modal System
+    function openModal(id) {
+        $(`#${id}`).classList.add('active');
+    }
+    function closeModal(id) {
+        $(`#${id}`).classList.remove('active');
+    }
+    function openCreateTripModal() {
+        openModal('create-trip-modal');
+    }
+
+
+    // --- Init ---
+    window.addEventListener('load', () => {
+        // Check local storage
+        if (App.user) {
+            navigateTo('dashboard');
+        } else {
+            navigateTo('login');
+        }
+    });
+
+</script>
+<style>
+    @keyframes slideIn {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
