@@ -5,33 +5,44 @@
     <base target="_top">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Travel Planner</title>
-    <!-- Preload Fonts -->
+    <title>旅遊行程規劃 (Travel Planner)</title>
+    <!-- 預載字型 (Preload Fonts) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* 
+         * CSS 變數定義 (CSS Variables) 
+         * 定義系統主色調、背景色、圓角與陰影效果，方便全站統一管理。
+         */
         :root {
             --primary-color: #6366f1;
-            /* Indigo 500 */
+            /* 主色調: 靛藍色 */
             --primary-hover: #4f46e5;
+            /* 主色調 (Hover): 深靛藍 */
             --secondary-color: #14b8a6;
-            /* Teal 500 */
+            /* 次要色: 青色 */
             --bg-color: #f3f4f6;
-            /* Gray 100 */
+            /* 背景色: 淺灰 */
             --surface-color: #ffffff;
+            /* 表面色: 白 */
             --text-main: #1f2937;
-            /* Gray 800 */
+            /* 主要文字: 深灰 */
             --text-muted: #6b7280;
-            /* Gray 500 */
+            /* 次要文字: 中灰 */
             --border-color: #e5e7eb;
+            /* 邊框色 */
             --danger-color: #ef4444;
+            /* 危險/刪除色: 紅 */
             --success-color: #10b981;
+            /* 成功色: 綠 */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --radius-md: 0.5rem;
+            /* 中圓角 */
             --radius-lg: 0.75rem;
+            /* 大圓角 */
             --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
@@ -49,7 +60,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Layout */
+        /* 佈局 (Layout) */
         .app-container {
             display: flex;
             flex-direction: column;
@@ -92,7 +103,7 @@
             margin: 0 auto;
         }
 
-        /* Typography */
+        /* 標題與文字 (Typography) */
         h1,
         h2,
         h3 {
@@ -115,7 +126,7 @@
             margin-bottom: 1rem;
         }
 
-        /* Components */
+        /* 元件 (Components) */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -177,7 +188,7 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* Forms */
+        /* 表單 (Forms) */
         .form-group {
             margin-bottom: 1rem;
         }
@@ -205,7 +216,7 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        /* Utilities */
+        /* 工具類 (Utilities) */
         .hidden {
             display: none !important;
         }
@@ -226,7 +237,7 @@
             gap: 1.5rem;
         }
 
-        /* Loading Spinner */
+        /* 載入中動畫 (Loading Spinner) */
         .spinner {
             width: 2rem;
             height: 2rem;
@@ -243,7 +254,7 @@
             }
         }
 
-        /* Modal */
+        /* 彈出視窗 (Modal) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -312,9 +323,10 @@
 </head>
 
 <body>
+    <!-- 應用程式主容器 -->
     <div class="app-container">
 
-        <!-- Navbar -->
+        <!-- 導航列 (Navbar) -->
         <nav class="navbar">
             <a href="#" class="nav-brand">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -323,68 +335,70 @@
                     </path>
                     <path d="M15 10l5 5"></path>
                 </svg>
-                TravelPlanner
+                TravelPlanner (行程規劃大師)
             </a>
             <div id="nav-links" class="nav-menu hidden">
                 <span id="nav-user-name" style="font-weight:500; color: var(--primary-color)"></span>
-                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                <button class="btn btn-secondary" onclick="logout()">登出</button>
             </div>
         </nav>
 
-        <!-- Main Content -->
+        <!-- 主要內容區 (Main Content) -->
         <main class="main-content">
 
-            <!-- Login View -->
+            <!-- 1. 登入畫面 (Login View) -->
             <section id="view-login" class="view-section hidden">
                 <div style="max-width: 400px; margin: 4rem auto; text-align: center;">
-                    <h2 class="mb-4">Welcome Back</h2>
+                    <h2 class="mb-4">歡迎回來</h2>
                     <form onsubmit="handleLogin(event)" class="card" style="text-align: left;">
                         <div class="form-group">
-                            <label class="form-label">Email</label>
+                            <label class="form-label">電子郵件 (Email)</label>
                             <input type="email" id="login-email" class="form-control" required
                                 placeholder="user@example.com">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Password</label>
+                            <label class="form-label">密碼 (Password)</label>
                             <input type="password" id="login-password" class="form-control" required
                                 placeholder="******">
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%">Sign In</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%">登入系統</button>
                     </form>
                 </div>
             </section>
 
-            <!-- Dashboard View -->
+            <!-- 2. 行程儀表板 (Dashboard View) -->
             <section id="view-dashboard" class="view-section hidden">
                 <div class="flex-between mb-4">
-                    <h1>My Trips</h1>
-                    <button class="btn btn-primary" onclick="openCreateTripModal()">+ New Trip</button>
+                    <h1>您的行程 (My Trips)</h1>
+                    <button class="btn btn-primary" onclick="openCreateTripModal()">+ 建立新行程</button>
                 </div>
+                <!-- 行程列表容器 -->
                 <div id="trip-list" class="grid-trips">
-                    <!-- Trips Rendered Here -->
+                    <!-- 行程卡片將由 JS 動態渲染至此 -->
                 </div>
             </section>
 
-            <!-- Trip Detail View -->
+            <!-- 3. 行程詳情頁 (Trip Detail View) -->
             <section id="view-trip-detail" class="view-section hidden">
-                <button class="btn btn-secondary mb-4" onclick="navigateTo('dashboard')">← Back to Dashboard</button>
+                <button class="btn btn-secondary mb-4" onclick="navigateTo('dashboard')">← 返回列表</button>
 
                 <div id="detail-loading" class="spinner"></div>
 
                 <div id="detail-content" class="hidden">
                     <div class="card mb-4"
                         style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); color: white;">
-                        <h2 id="d-title" style="color:white; margin-bottom: 0.5rem">Title</h2>
-                        <p id="d-meta" style="color: rgba(255,255,255,0.8)">Date</p>
+                        <h2 id="d-title" style="color:white; margin-bottom: 0.5rem">行程標題</h2>
+                        <p id="d-meta" style="color: rgba(255,255,255,0.8)">時間 - 说明</p>
                     </div>
 
                     <div class="flex-between mb-4">
-                        <h3>Itinerary</h3>
-                        <button class="btn btn-primary" onclick="alert('TODO: Add Items UI')">+ Add Activity</button>
+                        <h3>詳細行程表</h3>
+                        <button class="btn btn-primary" onclick="alert('功能開發中：請稍後...')">+ 新增活動</button>
                     </div>
 
+                    <!-- 行程細項列表 -->
                     <div id="itinerary-list">
-                        <!-- Items -->
+                        <!-- 細項將由 JS 動態渲染至此 -->
                     </div>
                 </div>
             </section>
@@ -392,32 +406,33 @@
         </main>
     </div>
 
-    <!-- Modals -->
+    <!-- 彈出視窗：建立新行程 -->
     <div id="create-trip-modal" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
-                <h3>Create New Trip</h3>
+                <h3>建立新行程</h3>
                 <button class="close-btn" onclick="closeModal('create-trip-modal')">&times;</button>
             </div>
             <form onsubmit="handleCreateTrip(event)">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="form-label">Trip Title</label>
-                        <input type="text" id="new-trip-title" class="form-control" required>
+                        <label class="form-label">行程標題</label>
+                        <input type="text" id="new-trip-title" class="form-control" required placeholder="例如：日本東京五日遊">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea id="new-trip-desc" class="form-control" rows="3"></textarea>
+                        <label class="form-label">描述</label>
+                        <textarea id="new-trip-desc" class="form-control" rows="3"
+                            placeholder="簡單描述這次的旅行亮點..."></textarea>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Start Date</label>
+                        <label class="form-label">開始日期</label>
                         <input type="date" id="new-trip-date" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
-                        onclick="closeModal('create-trip-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Trip</button>
+                        onclick="closeModal('create-trip-modal')">取消</button>
+                    <button type="submit" class="btn btn-primary">確認建立</button>
                 </div>
             </form>
         </div>
@@ -425,27 +440,38 @@
 
     <script>
         /**
-         * Frontend Logic
+         * 前端邏輯 (Frontend Logic)
+         * 負責處理畫面渲染、API 串接以及應用程式狀態管理。
          */
 
-        // --- Configuration ---
+        // --- 設定 (Configuration) ---
         const CONFIG = {
-            // [IMPORTANT] Replace with your actual GAS Web App URL
+            // [重要] 請將此處替換為您部署好的 Google Apps Script Web App URL
             API_URL: 'https://script.google.com/macros/s/AKfycbzfOQPJ7jRsnhognDdlFoSwW1KkArlOSYoY4rDHkMWL6gnE_bqk7qhrZOOFNp5prCkJ/exec'
         };
 
-        // --- App State ---
+        // --- 應用程式狀態 (App State) ---
+        /**
+         * 管理全域狀態
+         * @property {Object|null} user - 當前登入的使用者資訊，包含 token
+         * @property {Object|null} currentTrip - 當前正在檢視的行程詳情
+         */
         const App = {
             user: JSON.parse(localStorage.getItem('travel_user')) || null,
             currentTrip: null
         };
 
-        // --- DOM Utils ---
+        // --- DOM 工具函式 (DOM Utils) ---
         const $ = (s) => document.querySelector(s);
         const $all = (s) => document.querySelectorAll(s);
         const html = (strings, ...values) => String.raw({ raw: strings }, ...values);
 
-        // XSS Protection
+        /**
+         * XSS 防護處理 function
+         * 將不安全的 HTML 字元轉換為 HTML 實體編碼，防止惡意腳本注入。
+         * @param {string} unsafe - 可能包含惡意代碼的字串
+         * @returns {string} 安全的字串
+         */
         const escapeHtml = (unsafe) => {
             if (typeof unsafe !== 'string') return unsafe;
             return unsafe
@@ -456,31 +482,39 @@
                 .replace(/'/g, "&#039;");
         };
 
-        // --- API Bridge (Fetch) ---
+        // --- API 橋接器 (API Bridge) ---
         const api = {
+            /**
+             * 呼叫後端 API 的通用方法
+             * 
+             * @param {string} action - 要執行的動作名稱 (對應後端 switch case)
+             * @param {Object} data - 傳送給後端的參數物件
+             * @returns {Promise<any>} 後端回傳的資料
+             * @throws {Error} 如果 API 呼叫失敗或回傳錯誤狀態
+             */
             call: async (action, data = {}) => {
                 showLoading(true);
                 try {
-                    // Ensure API URL is configured
+                    // 簡單檢查是否設定了 API URL
                     if (CONFIG.API_URL.includes('YOUR_SCRIPT_ID')) {
-                        const url = prompt('Please enter your Google Apps Script Web App URL:', '');
+                        const url = prompt('系統檢測到 API URL 尚未設定，請輸入您的 Google Apps Script Web App URL:', '');
                         if (url) {
                             CONFIG.API_URL = url;
-                            // Determine if we should save this for debugging? No, just run.
                         } else {
-                            throw new Error('API URL not configured');
+                            throw new Error('未設定 API URL，無法連線。');
                         }
                     }
 
-                    // Add action and token to payload
+                    // 準備 Payload：加入 action 與 token
                     const payload = { ...data, action };
                     if (App.user && App.user.auth_token) {
                         payload.token = App.user.auth_token;
                     }
 
+                    // 發送請求
                     const response = await fetch(CONFIG.API_URL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 使用 text/plain 避免 CORS preflight (簡單請求)
                         body: JSON.stringify(payload)
                     });
 
@@ -490,43 +524,55 @@
                     if (result.status === 'success') {
                         return result.data;
                     } else {
+                        // 處理權限錯誤 (Token 失效)
                         if (result.message === 'Unauthorized' || result.message === 'Invalid credentials') {
                             if (action !== 'login') logout();
                         }
-                        showToast(result.message, 'error');
+                        showToast('操作失敗: ' + result.message, 'error');
                         throw new Error(result.message);
                     }
                 } catch (err) {
                     showLoading(false);
                     console.error(err);
-                    showToast('API Error: ' + err.message, 'error');
+                    if (err.message.includes('fetch')) {
+                        showToast('連線錯誤: 無法連線到伺服器。', 'error');
+                    } else {
+                        showToast(err.message, 'error');
+                    }
                     throw err;
                 }
             }
         };
 
-        // --- View Router ---
+        // --- 視圖路由 (View Router) ---
+        /**
+         * 切換頁面顯示
+         * @param {string} viewId - 要顯示的區塊 ID (不含 view- 前綴，例如 'login', 'dashboard')
+         */
         function navigateTo(viewId) {
-            // Hide all views
+            // 隱藏所有視圖
             $all('.view-section').forEach(el => el.classList.add('hidden'));
 
-            // Auth Check
+            // 權限檢查：未登入強制跳轉登入頁
             if (viewId !== 'login' && !App.user) {
                 navigateTo('login');
                 return;
             }
 
-            // Show target view
+            // 顯示目標視圖
             const target = $(`#view-${viewId}`);
             if (target) {
                 target.classList.remove('hidden');
-                // Trigger init hooks
+                // 觸發該頁面的初始化邏輯
                 if (viewId === 'dashboard') loadDashboard();
             }
 
             updateNav();
         }
 
+        /**
+         * 更新導航列狀態 (登入/未登入顯示使用者名稱和登出按鈕)
+         */
         function updateNav() {
             if (App.user) {
                 $('#nav-user-name').textContent = App.user.display_name || App.user.email;
@@ -536,9 +582,13 @@
             }
         }
 
-        // --- Views Logic ---
+        // --- 業務邏輯 (Business Logic) ---
 
-        // Login View
+        // 1. 登入邏輯
+        /**
+         * 處理使用者登入表單提交
+         * @param {Event} e - 表單提交事件物件
+         */
         async function handleLogin(e) {
             e.preventDefault();
             const email = $('#login-email').value;
@@ -547,59 +597,76 @@
             try {
                 const user = await api.call('login', { email, password });
                 App.user = user;
+                // 將使用者資訊寫入 LocalStorage 保持登入狀態
                 localStorage.setItem('travel_user', JSON.stringify(user));
-                showToast('Welcome back!');
+                showToast('歡迎回來！');
                 navigateTo('dashboard');
             } catch (err) {
                 console.error(err);
             }
         }
 
+        /**
+         * 執行使用者登出操作
+         * 清除本地儲存的使用者資訊並導航回登入頁面。
+         */
         function logout() {
             App.user = null;
             localStorage.removeItem('travel_user');
             navigateTo('login');
+            showToast('您已成功登出。');
         }
 
-        // Dashboard View
+        // 2. 儀表板邏輯 (Dashboard)
+        /**
+         * 載入並顯示儀表板上的行程列表
+         * 顯示載入動畫，然後從後端獲取行程資料並渲染。
+         */
         async function loadDashboard() {
             $('#trip-list').innerHTML = '<div class="spinner"></div>';
             try {
-                // No need to send owner_id, backend derives it from token
+                // 呼叫 API 取得行程列表 (後端會根據 token 自動判斷使用者)
                 const trips = await api.call('getTrips');
                 renderTripList(trips);
             } catch (err) {
-                $('#trip-list').innerHTML = '<p class="text-center text-muted">Failed to load trips.</p>';
+                $('#trip-list').innerHTML = '<p class="text-center text-muted">無法載入行程列表。</p>';
             }
         }
 
+        /**
+         * 渲染行程卡片列表到 DOM 中
+         * @param {Array<Object>} trips - 行程資料物件的陣列，每個物件包含 id, title, description, start_date, status 等屬性。
+         */
         function renderTripList(trips) {
             const container = $('#trip-list');
             if (trips.length === 0) {
                 container.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                <p>No trips found. Create your first one!</p>
-                <button class="btn btn-primary" onclick="openCreateTripModal()">Create Trip</button>
+                <p>目前沒有任何行程。立即開始規劃您的第一次旅行吧！</p>
+                <button class="btn btn-primary" onclick="openCreateTripModal()">建立新行程</button>
             </div>`;
                 return;
             }
 
             container.innerHTML = trips.map(trip => `
-        <div class="card" onclick="openTripDetails('${trip.id}')">
+        <div class="card" onclick="openTripDetails('${trip.id}')" style="cursor: pointer;">
             <h3>${escapeHtml(trip.title)}</h3>
-            <p>${escapeHtml(trip.description || 'No description')}</p>
+            <p>${escapeHtml(trip.description || '無描述')}</p>
             <div class="flex-between" style="margin-top: 1rem; color: var(--text-muted); font-size: 0.875rem;">
-               <span>${new Date(trip.start_date).toLocaleDateString()}</span>
-               <span>${escapeHtml(trip.status || 'Planned')}</span>
+               <span>出發日: ${new Date(trip.start_date).toLocaleDateString()}</span>
+               <span>狀態: ${escapeHtml(trip.status || '規劃中')}</span>
             </div>
         </div>
     `).join('');
         }
 
+        /**
+         * 處理建立新行程表單提交
+         * @param {Event} e - 表單提交事件物件
+         */
         async function handleCreateTrip(e) {
             e.preventDefault();
             const data = {
-                // owner_id derived by backend
                 title: $('#new-trip-title').value,
                 description: $('#new-trip-desc').value,
                 start_date: $('#new-trip-date').value
@@ -608,18 +675,24 @@
             try {
                 await api.call('createTrip', data);
                 closeModal('create-trip-modal');
-                loadDashboard();
-                showToast('Trip created successfully');
+                loadDashboard(); // 重新整理列表
+                showToast('行程建立成功！');
             } catch (err) {
-                // handled in api
+                // 錯誤已在 api.call 中處理
             }
         }
 
-        // Trip Details Logic
+        // 3. 行程詳情邏輯 (Trip Details)
+        /**
+         * 開啟並顯示指定行程的詳細資訊頁面
+         * @param {string} tripId - 要顯示詳情的行程 ID
+         */
         async function openTripDetails(tripId) {
+            // 切換畫面
             $('#view-dashboard').classList.add('hidden');
             $('#view-trip-detail').classList.remove('hidden');
 
+            // 顯示 Loading
             $('#detail-loading').classList.remove('hidden');
             $('#detail-content').classList.add('hidden');
 
@@ -628,37 +701,69 @@
                 App.currentTrip = trip;
                 renderTripDetail(trip);
             } catch (err) {
-                showToast('Failed to load details', 'error');
+                showToast('無法載入行程詳情', 'error');
                 navigateTo('dashboard');
             }
         }
 
+        /**
+         * 渲染單一行程的詳細資訊到 DOM 中
+         * @param {Object} trip - 行程完整物件，包含 title, description, start_date, items 等屬性。
+         */
         function renderTripDetail(trip) {
             $('#detail-loading').classList.add('hidden');
             $('#detail-content').classList.remove('hidden');
 
-            $('#d-title').textContent = trip.title; // Secure
-            $('#d-meta').textContent = `${new Date(trip.start_date).toLocaleDateString()} - ${trip.description || ''}`; // Secure
+            $('#d-title').textContent = trip.title; // 這裡使用 textContent，瀏覽器會自動防護 XSS
+            $('#d-meta').textContent = `${new Date(trip.start_date).toLocaleDateString()} - ${trip.description || ''}`;
 
             const list = $('#itinerary-list');
+            // 渲染細項列表
             list.innerHTML = (trip.items || []).map(item => `
         <div class="card mb-4 flex-between">
             <div>
-                <h4>Day ${item.day_index}: ${escapeHtml(item.title || 'Untitled')}</h4>
+                <h4>第 ${item.day_index} 天: ${escapeHtml(item.title || '未命名活動')}</h4>
                 <p style="margin:0">${escapeHtml(item.location_name || '')}</p>
             </div>
-            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteItem('${item.id}')">Delete</button>
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteItem('${item.id}')">刪除</button>
         </div>
     `).join('');
         }
 
+        // TODO: 實作 deleteItem 函數
+        /**
+         * 刪除行程中的某個活動項目
+         * @param {string} itemId - 要刪除的活動項目 ID
+         */
+        async function deleteItem(itemId) {
+            if (!confirm('確定要刪除此活動項目嗎？')) return;
 
-        // --- UI Utilities ---
-
-        function showLoading(show) {
-            // Global spinner or bar could be added
+            try {
+                await api.call('deleteItem', { item_id: itemId, trip_id: App.currentTrip.id });
+                showToast('活動項目已刪除');
+                // 重新載入行程詳情以更新列表
+                openTripDetails(App.currentTrip.id);
+            } catch (err) {
+                console.error('刪除活動項目失敗:', err);
+            }
         }
 
+
+        // --- UI 工具 (UI Utilities) ---
+
+        /**
+         * 顯示或隱藏全域載入動畫
+         * @param {boolean} show - true 為顯示，false 為隱藏
+         */
+        function showLoading(show) {
+            // 這裡可以實作全域的 Loading 遮罩，目前暫時留空
+        }
+
+        /**
+         * 顯示提示訊息 (Toast)
+         * @param {string} msg - 訊息內容
+         * @param {'success' | 'error'} [type='success'] - 訊息類型，影響背景顏色
+         */
         function showToast(msg, type = 'success') {
             const el = document.createElement('div');
             el.style.cssText = `
@@ -670,34 +775,45 @@
     `;
             el.textContent = msg;
             document.body.appendChild(el);
+            // 3秒後自動消失
             setTimeout(() => {
                 el.style.opacity = '0';
                 setTimeout(() => el.remove(), 300);
             }, 3000);
         }
 
-        // Modal System
+        // 彈出視窗系統 (Modal System)
+        /**
+         * 開啟指定的彈出視窗
+         * @param {string} id - 彈出視窗元素的 ID
+         */
         function openModal(id) {
             $(`#${id}`).classList.add('active');
         }
+        /**
+         * 關閉指定的彈出視窗
+         * @param {string} id - 彈出視窗元素的 ID
+         */
         function closeModal(id) {
             $(`#${id}`).classList.remove('active');
         }
+        /**
+         * 開啟建立新行程的彈出視窗
+         */
         function openCreateTripModal() {
             openModal('create-trip-modal');
         }
 
 
-        // --- Init ---
+        // --- 初始化 (Initialization) ---
         window.addEventListener('load', () => {
-            // Check local storage
+            // 檢查登入狀態
             if (App.user) {
                 navigateTo('dashboard');
             } else {
                 navigateTo('login');
             }
         });
-
     </script>
     <style>
         @keyframes slideIn {
