@@ -349,20 +349,19 @@
             <!-- 1. 登入畫面 (Login View) -->
             <section id="view-login" class="view-section hidden">
                 <div style="max-width: 400px; margin: 4rem auto; text-align: center;">
-                    <h2 class="mb-4">歡迎回來</h2>
-                    <form onsubmit="handleLogin(event)" class="card" style="text-align: left;">
-                        <div class="form-group">
-                            <label class="form-label">電子郵件 (Email)</label>
-                            <input type="email" id="login-email" class="form-control" required
-                                placeholder="user@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">密碼 (Password)</label>
-                            <input type="password" id="login-password" class="form-control" required
-                                placeholder="******">
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%">登入系統</button>
-                    </form>
+                    <h2 class="mb-4">歡迎使用旅遊行程規劃系統</h2>
+                    <p class="mb-4">請使用 Google 帳號登入以繼續</p>
+
+                    <!-- Google 登入按鈕容器 -->
+                    <div id="g_id_onload"
+                        data-client_id="813216180870-88pi8mkt0qeijd8183ake8t3akjqkmmc.apps.googleusercontent.com"
+                        data-callback="handleGoogleLogin" data-auto_prompt="false">
+                    </div>
+                    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+                        data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left">
+                    </div>
+
+                    <!-- 移除舊有的 Email/Password 表單 -->
                 </div>
             </section>
 
@@ -437,6 +436,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Google Identity Services Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
         /**
@@ -576,6 +578,9 @@
         function updateNav() {
             if (App.user) {
                 $('#nav-user-name').textContent = App.user.display_name || App.user.email;
+                if (App.user.role === 'admin') {
+                    $('#nav-user-name').textContent += ' (管理者)';
+                }
                 $('#nav-links').classList.remove('hidden');
             } else {
                 $('#nav-links').classList.add('hidden');
@@ -585,26 +590,34 @@
         // --- 業務邏輯 (Business Logic) ---
 
         // 1. 登入邏輯
+
         /**
-         * 處理使用者登入表單提交
-         * @param {Event} e - 表單提交事件物件
+         * callback function for Google Sign-In
+         * 當 Google 登入成功後，會呼叫此函式並傳入 response
          */
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = $('#login-email').value;
-            const password = $('#login-password').value;
+        async function handleGoogleLogin(response) {
+            // Google 回傳的 Credential (JWT)
+            const credential = response.credential;
 
             try {
-                const user = await api.call('login', { email, password });
+                // 將 Credential 傳後端驗證並交換 App Token
+                const user = await api.call('login', { credential });
                 App.user = user;
-                // 將使用者資訊寫入 LocalStorage 保持登入狀態
+
+                // 本地儲存使用者資訊
                 localStorage.setItem('travel_user', JSON.stringify(user));
-                showToast('歡迎回來！');
+
+                showToast('登入成功！歡迎回來 ' + user.display_name);
                 navigateTo('dashboard');
+
             } catch (err) {
-                console.error(err);
+                console.error('Login failed', err);
+                showToast('登入失敗，請重試', 'error');
             }
         }
+
+        /* 舊有的表單登入已移除 */
+        /* function handleLogin(e) ... */
 
         /**
          * 執行使用者登出操作
@@ -613,6 +626,12 @@
         function logout() {
             App.user = null;
             localStorage.removeItem('travel_user');
+
+            // 登出 Google Session (如果需要強制登入帳號切換)
+            if (window.google && google.accounts && google.accounts.id) {
+                google.accounts.id.disableAutoSelect();
+            }
+
             navigateTo('login');
             showToast('您已成功登出。');
         }

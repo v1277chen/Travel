@@ -16,12 +16,29 @@
   - 安全性：Token-based Authentication, Password Hashing (SHA-256)
 
 ## 功能特色 (Features)
-- **使用者驗證**: 註冊、登入、Token 驗證。
+- **使用者驗證**: 支援 **Google Sign-In** (取代原本的 Email/密碼登入)，安全方便。
+- **權限管理**: 自動識別特定 Admin 帳號 (`v1277.chen@gmail.com`, `alenchen@stust.edu.tw`) 給予最高權限。
 - **行程管理**: 建立、檢視、修改旅遊行程。
 - **細項規劃**: 管理每日行程活動 (開發中)。
 - **安全性**: XSS 防護、權限控管 (防止 IDOR 攻擊)。
 
 ## 部署教學 (Deployment Guide)
+
+### 0. Google Cloud Project 設定 (必要)
+為了啟用 Google 登入，您需要設定 Google Cloud 專案：
+
+1. 前往 [Google Cloud Console](https://console.cloud.google.com/)。
+2. 建立新專案或選擇現有專案。
+3. 前往 **API 和服務** -> **OAuth 同意畫面 (OAuth Consent Screen)**:
+   - User Type 選擇 `External` (外部)。
+   - 填寫應用程式名稱 (例如 TravelPlanner) 與聯絡資訊。
+4. 前往 **憑證 (Credentials)**:
+   - 點擊「建立憑證」-> **OAuth 用戶端 ID**。
+   - 應用程式類型選擇 `網頁應用程式`。
+   - **已授權的 JavaScript 來源**: 加入您的 GitHub Pages 網址 (例如 `https://your-username.github.io`) 以及 Google Apps Script 域名。
+   - **已授權的重新導向 URI**: 加入您的 GitHub Pages 網址。
+   - 建立後，複製 **用戶端 ID (Client ID)**。
+5. 打開 `index.html`，搜尋 `YOUR_GOOGLE_CLIENT_ID` 並替換為您的 Client ID。
 
 ### 1. 後端部署 (Backend Deployment)
 
