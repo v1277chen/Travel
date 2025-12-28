@@ -1,4 +1,4 @@
-backend/
+# backend/
 *.gs
 .clasp.json
 node_modules/
