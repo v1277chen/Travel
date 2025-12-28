@@ -530,6 +530,8 @@
                         if (result.message === 'Unauthorized' || result.message === 'Invalid credentials') {
                             if (action !== 'login') logout();
                         }
+                        // 強制彈出視窗顯示詳細錯誤，方便除錯
+                        alert('API 錯誤: ' + result.message);
                         showToast('操作失敗: ' + result.message, 'error');
                         throw new Error(result.message);
                     }
@@ -537,8 +539,13 @@
                     showLoading(false);
                     console.error(err);
                     if (err.message.includes('fetch')) {
+                        alert('連線錯誤: 無法連線到伺服器 (Fetch Error)');
                         showToast('連線錯誤: 無法連線到伺服器。', 'error');
                     } else {
+                        // 若尚未 alert 過，這裡再 alert 一次
+                        if (!err.message.includes('API 錯誤')) {
+                            alert('系統錯誤: ' + err.message);
+                        }
                         showToast(err.message, 'error');
                     }
                     throw err;
