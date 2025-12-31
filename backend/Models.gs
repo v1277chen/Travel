@@ -152,3 +152,62 @@ const UserModel = {
       return getDataRows(this.SHEET_NAME);
   }
 };
+// === Trip Model === //
+const TripModel = {
+  SHEET_NAME: 'Trips',
+  
+  create: function(trip) {
+    const sheet = getSheet(this.SHEET_NAME);
+    const row = [
+      trip.trip_id,
+      trip.user_id,
+      trip.title,
+      trip.description || '',
+      trip.start_date || '',
+      trip.end_date || '',
+      trip.status || 'planning', // planning, active, completed, archived
+      trip.created_at,
+      trip.updated_at
+    ];
+    sheet.appendRow(row);
+    return trip;
+  },
+  
+  findByUserId: function(userId) {
+    const allTrips = getDataRows(this.SHEET_NAME);
+    // 假設 user_id 在欄位中
+    // 簡單過濾 (若資料量大需優化，例如 TextFinder)
+    return allTrips.filter(t => t.user_id === userId && t.status !== 'deleted');
+  },
+  
+  findById: function(tripId) {
+    const allTrips = getDataRows(this.SHEET_NAME);
+    return allTrips.find(t => t.trip_id === tripId);
+  },
+  
+  update: function(tripId, updates) {
+    // 簡易實作：找到 Row Index 並更新特定欄位
+    // 為了效能，這裡先假設只更新 status 或基本資訊
+    // 實際上應該要有更好的 update 機制
+    const sheet = getSheet(this.SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const idIdx = headers.indexOf('trip_id');
+    
+    if (idIdx === -1) return null;
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][idIdx] === tripId) {
+        // Apply updates
+        for (const [key, value] of Object.entries(updates)) {
+          const colIdx = headers.indexOf(key);
+          if (colIdx !== -1) {
+             sheet.getRange(i + 1, colIdx + 1).setValue(value);
+          }
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+};

@@ -57,8 +57,11 @@ function doPost(e) {
         result = handleAdminUpdateUser(currentUser, payload);
         break;
         
-      // --- Trip Routes (Placeholder) ---
-      // case 'trip/create': result = TripService.create(currentUser, payload); break;
+      // --- Trip Routes ---
+      case 'trip/create': result = TripService.create(currentUser, payload); break;
+      case 'trip/list':   result = TripService.listByUser(currentUser); break;
+      case 'trip/get':    result = TripService.getDetails(currentUser, payload); break;
+      case 'trip/delete': result = TripService.deleteTrip(currentUser, payload); break;
       
       default:
         return errorResponse('Unknown action: ' + action, 'NOT_FOUND');
