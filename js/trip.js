@@ -88,9 +88,14 @@ const Trip = {
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-2">
                     <h3 class="text-xl font-bold text-gray-800">${escapeHtml(trip.title)}</h3>
-                    <span class="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                        ${trip.status}
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">
+                            ${trip.status}
+                        </span>
+                        <button onclick="event.stopPropagation(); Trip.handleDelete('${trip.trip_id}')" class="text-gray-400 hover:text-red-500 p-1" title="刪除行程">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                 </div>
                 <p class="text-gray-600 text-sm mb-4 line-clamp-2">${escapeHtml(trip.description || '沒有描述')}</p>
                 
@@ -154,6 +159,25 @@ const Trip = {
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;
+        }
+    },
+
+    /**
+     * 處理刪除行程 (Handle Delete Trip)
+     * 
+     * @param {string} tripId
+     */
+    handleDelete: async (tripId) => {
+        if (!confirm('確定要刪除這個行程嗎？此動作無法復原。')) return;
+
+        try {
+            await apiService.call('trip/delete', { trip_id: tripId });
+            showToast('行程已刪除');
+            // 重新載入列表
+            Trip.loadList();
+        } catch (e) {
+            console.error(e);
+            showToast('刪除失敗: ' + e.message, 'error');
         }
     },
 

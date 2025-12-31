@@ -89,11 +89,20 @@ const TripDetail = {
             const btn = document.createElement('button');
             const isActive = day.day_id === TripDetail.state.activeDayId;
             btn.className = `px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition ${isActive
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                 }`;
             // 顯示 Day N (MM/DD)
-            const dateStr = day.date.substring(5).replace('-', '/');
+            // 安全處理日期: 若為 Date 物件則轉字串，否則直接取用
+            let dateStr = '';
+            if (day.date instanceof Date) {
+                dateStr = day.date.toISOString();
+            } else {
+                dateStr = String(day.date);
+            }
+            // 只取 MM/DD (5-10)
+            dateStr = dateStr.substring(5, 10).replace('-', '/');
+
             btn.textContent = `Day ${day.day_order} (${dateStr})`;
             btn.onclick = () => TripDetail.switchDay(day.day_id);
             tabsContainer.appendChild(btn);
