@@ -75,7 +75,7 @@ const App = {
                     break;
                 case 'trip-detail':
                     if (params) {
-                        Trip.loadDetail(params); // 載入行程詳情
+                        TripDetail.init(params); // 改用 TripDetail 模組初始化
                     }
                     break;
             }

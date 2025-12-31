@@ -8,7 +8,7 @@
 const CONFIG = {
     // Backend API URL (GAS Web App URL)
     // 請將此處替換為您部署後取得的 Web App URL
-    API_URL: 'https://script.google.com/macros/s/AKfycbyI_Y-Xiy-gXwG_tYd8P_xJkI8XgE_rW2lS_uX6/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbzfOQPJ7jRsnhognDdlFoSwW1KkArlOSYoY4rDHkMWL6gnE_bqk7qhrZOOFNp5prCkJ/exec',
 
     // Google OAuth 2.0 Client ID
     // 用於 Google Sign-In 驗證
