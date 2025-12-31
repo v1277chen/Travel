@@ -66,11 +66,20 @@ const TripDetail = {
 
         // 這裡我們不直接操作 #trip-detail-title，而是連同 Header 一起重新渲染在 Content Area 上方，或者更新既有 DOM
         // 為了簡單起見，我們假設 #trip-detail-title 和 #trip-detail-dates 是在 index.html 的固定位置
+        // 1. 更新 Header 資訊 (標題, 日期, 編輯/刪除按鈕)
+        // 使用 innerHTML 更新 Title 區域，包含按鈕
         $('#trip-detail-title').innerHTML = `
-            ${escapeHtml(trip.title)}
-            <button onclick="TripDetail.deleteTrip()" class="ml-4 text-gray-400 hover:text-red-500 text-lg" title="刪除整個行程">
-                <i class="fas fa-trash-alt"></i>
-            </button>
+            <div class="flex items-center">
+                <span>${escapeHtml(trip.title)}</span>
+                <div class="ml-4 flex gap-2 text-base">
+                    <button onclick="TripDetail.openEditModal()" class="text-gray-400 hover:text-indigo-600 p-1" title="編輯行程">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="TripDetail.deleteTrip()" class="text-gray-400 hover:text-red-500 p-1" title="刪除行程">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
         `;
         $('#trip-detail-dates').textContent = `${Trip.formatDate(trip.start_date)} - ${Trip.formatDate(trip.end_date)}`;
 
@@ -339,6 +348,61 @@ const TripDetail = {
         }
     },
 
+
+
+    /**
+     * 開啟編輯行程 Modal
+     */
+    openEditModal: () => {
+        const { trip } = TripDetail.state;
+        if (!trip) return;
+
+        $('#edit-trip-id').value = trip.trip_id;
+        $('#edit-trip-title').value = trip.title;
+        // 日期格式 YYYY-MM-DD
+        $('#edit-trip-start-date').value = trip.start_date.substring(0, 10);
+        $('#edit-trip-end-date').value = trip.end_date.substring(0, 10);
+        $('#edit-trip-desc').value = trip.description || '';
+
+        $('#edit-trip-modal').classList.remove('hidden');
+    },
+
+    /**
+     * 處理編輯行程提交
+     */
+    handleEditTripSubmit: async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = '更新中...';
+
+        try {
+            const tripId = $('#edit-trip-id').value;
+            const payload = {
+                trip_id: tripId,
+                title: $('#edit-trip-title').value,
+                start_date: $('#edit-trip-start-date').value,
+                end_date: $('#edit-trip-end-date').value,
+                description: $('#edit-trip-desc').value
+            };
+
+            await apiService.call('trip/update', payload);
+
+            showToast('行程已更新');
+            $('#edit-trip-modal').classList.add('hidden');
+
+            // 重新載入詳情
+            TripDetail.init(tripId);
+
+        } catch (err) {
+            console.error(err);
+            showToast('更新失敗: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '儲存變更';
+        }
+    },
+
     /**
      * 刪除整個行程 (Delete Trip from Detail Page)
      */
@@ -362,9 +426,14 @@ window.TripDetail = TripDetail;
 
 // 頁面載入後綁定 Modal 事件
 document.addEventListener('DOMContentLoaded', () => {
-    // 綁定表單提交
-    const form = document.getElementById('add-item-form'); // 需在 index.html 建立此ID
-    if (form) {
-        form.addEventListener('submit', TripDetail.handleItemSubmit);
+    // 綁定項目表單提交
+    const itemForm = document.getElementById('add-item-form');
+    if (itemForm) {
+        itemForm.addEventListener('submit', TripDetail.handleItemSubmit);
+    }
+    // 綁定行程編輯表單提交
+    const tripForm = document.getElementById('edit-trip-form');
+    if (tripForm) {
+        tripForm.addEventListener('submit', TripDetail.handleEditTripSubmit);
     }
 });
