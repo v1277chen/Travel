@@ -63,14 +63,19 @@ const Trip = {
         submitBtn.disabled = true;
         submitBtn.textContent = '建立中...';
 
-        const data = {
-            title: $('#new-trip-title').value,
-            description: $('#new-trip-desc').value,
-            start_date: $('#new-trip-date').value,
-            end_date: $('#new-trip-end-date').value // 若有
-        };
-
         try {
+            const getVal = (id) => {
+                const el = $(id);
+                return el ? el.value : '';
+            };
+
+            const data = {
+                title: getVal('#new-trip-title'),
+                description: getVal('#new-trip-desc'),
+                start_date: getVal('#new-trip-date'),
+                end_date: getVal('#new-trip-end-date')
+            };
+
             await apiService.call('trip/create', data);
             showToast('行程建立成功！');
             document.getElementById('create-trip-modal').classList.remove('active');
