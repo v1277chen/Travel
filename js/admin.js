@@ -1,102 +1,141 @@
 /**
  * js/admin.js
- * 管理員功能模組
+ * 管理員面板模組 (Admin Module)
+ * 
+ * 負責管理員功能的 UI 呈現與邏輯，包含：
+ * 1. 使用者列表的讀取與渲染。
+ * 2. 權限變更 (升/降級)。
+ * 3. 狀態變更 (封鎖/解鎖)。
  */
 
 const Admin = {
-    init: async () => {
-        const container = $('#admin-content');
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="flex-between mb-4">
-                <h2>使用者管理</h2>
-                <button class="btn btn-secondary" onclick="Admin.loadUsers()">重新整理</button>
-            </div>
-            <div class="card" style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid var(--border-color);">
-                            <th style="text-align: left; padding: 1rem;">使用者</th>
-                            <th style="text-align: left; padding: 1rem;">Email</th>
-                            <th style="text-align: left; padding: 1rem;">角色</th>
-                            <th style="text-align: left; padding: 1rem;">狀態</th>
-                            <th style="text-align: right; padding: 1rem;">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-list-body">
-                        <tr><td colspan="5" style="padding:2rem; text-align:center;">載入中...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        `;
-
-        await Admin.loadUsers();
+    /**
+     * 初始化管理員面板
+     * 綁定事件監聽器等。
+     */
+    init: () => {
+        // 目前無特殊初始化邏輯，預留擴充空間
+        console.log('Admin Module Initialized');
     },
 
+    /**
+     * 載入使用者列表 (Load Users)
+     * 從後端 API 取得所有使用者資料並渲染至表格。
+     */
     loadUsers: async () => {
         try {
+            const tableBody = $('#user-table-body');
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">載入中...</td></tr>';
+
+            // 呼叫後端 'admin/getUsers'
             const users = await apiService.call('admin/getUsers');
-            Admin.renderUsers(users);
+
+            // 渲染表格
+            Admin.renderUserTable(users);
         } catch (e) {
-            $('#user-list-body').innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">載入失敗: ${e.message}</td></tr>`;
+            console.error(e);
+            showToast('載入使用者失敗: ' + e.message, 'error');
         }
     },
 
-    renderUsers: (users) => {
-        const tbody = $('#user-list-body');
-        if (users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center">無使用者資料</td></tr>';
-            return;
-        }
+    /**
+     * 渲染使用者表格 (Render User Table)
+     * 
+     * @param {Array<Object>} users - 使用者物件陣列
+     */
+    renderUserTable: (users) => {
+        const tableBody = $('#user-table-body');
+        tableBody.innerHTML = ''; // 清空目前內容
 
-        tbody.innerHTML = users.map(u => {
-            const isMe = (u.email === App.user.email);
-            return `
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 1rem;">
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                        <img src="${u.avatar_url}" style="width:32px; height:32px; border-radius:50%;">
-                        ${escapeHtml(u.name)}
+        users.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b hover:bg-gray-50';
+
+            // 根據使用者資料產生 HTML
+            // 使用 escapeHtml 防止 XSS
+            tr.innerHTML = `
+                <td class="p-3">
+                    <div class="flex items-center gap-2">
+                        <img src="${escapeHtml(user.avatar_url)}" class="w-8 h-8 rounded-full" onerror="this.src='https://via.placeholder.com/32'">
+                        <span>${escapeHtml(user.name)}</span>
                     </div>
                 </td>
-                <td style="padding: 1rem;">${escapeHtml(u.email)}</td>
-                <td style="padding: 1rem;">
-                    <span style="padding: 0.25rem 0.5rem; border-radius: 999px; font-size: 0.8rem; background: ${u.role === 'admin' ? '#e0e7ff' : '#f3f4f6'}; color: ${u.role === 'admin' ? '#4338ca' : '#374151'};">
-                        ${u.role}
+                <td class="p-3 text-gray-600">${escapeHtml(user.email)}</td>
+                <td class="p-3">
+                    <span class="px-2 py-1 rounded text-xs ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}">
+                        ${escapeHtml(user.role)}
                     </span>
                 </td>
-                <td style="padding: 1rem;">
-                    <span style="color: ${u.status === 'active' ? 'green' : 'red'}">${u.status}</span>
+                <td class="p-3">
+                    <span class="px-2 py-1 rounded text-xs ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                        ${escapeHtml(user.status)}
+                    </span>
                 </td>
-                <td style="padding: 1rem; text-align: right;">
-                    ${isMe ? '<span style="color:#9ca3af; font-size:0.9rem;">(本人)</span>' : `
-                        ${u.status === 'active'
-                        ? `<button class="btn btn-danger btn-sm" onclick="Admin.updateUser('${u.email}', 'ban')">封鎖</button>`
-                        : `<button class="btn btn-success btn-sm" onclick="Admin.updateUser('${u.email}', 'unban')">解鎖</button>`
-                    }
-                        ${u.role === 'user'
-                        ? `<button class="btn btn-secondary btn-sm" onclick="Admin.updateUser('${u.email}', 'promote')">設為管理員</button>`
-                        : `<button class="btn btn-secondary btn-sm" onclick="Admin.updateUser('${u.email}', 'demote')">降為一般用戶</button>`
-                    }
-                    `}
+                <td class="p-3">
+                    <div class="flex gap-2">
+                        ${Admin.getActionButtons(user)}
+                    </div>
                 </td>
-            </tr>
             `;
-        }).join('');
+            tableBody.appendChild(tr);
+        });
     },
 
+    /**
+     * 產生操作按鈕 (Generate Action Buttons)
+     * 根據使用者目前的狀態與角色，產生對應的可執行按鈕。
+     * 防止對自己進行操作。
+     * 
+     * @param {Object} user - 目標使用者
+     * @returns {string} HTML 按鈕字串
+     */
+    getActionButtons: (user) => {
+        // 禁止修改自己
+        if (user.email === App.user.email) return '<span class="text-gray-400 text-xs">自己</span>';
+
+        let buttons = '';
+
+        // 角色變更按鈕 (Promote/Demote)
+        if (user.role === 'user') {
+            buttons += `<button onclick="Admin.updateUser('${user.email}', 'promote')" class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200">設為 Admin</button>`;
+        } else {
+            buttons += `<button onclick="Admin.updateUser('${user.email}', 'demote')" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">降為 User</button>`;
+        }
+
+        // 狀態變更按鈕 (Ban/Unban)
+        if (user.status === 'active') {
+            buttons += `<button onclick="Admin.updateUser('${user.email}', 'ban')" class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200">封鎖</button>`;
+        } else {
+            buttons += `<button onclick="Admin.updateUser('${user.email}', 'unban')" class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded hover:bg-green-200">解除</button>`;
+        }
+
+        return buttons;
+    },
+
+    /**
+     * 更新使用者 (Update User)
+     * 發送 API 請求變更權限或狀態。
+     * 
+     * @param {string} email - 目標 Email
+     * @param {string} action - 動作 (promote, demote, ban, unban)
+     */
     updateUser: async (email, action) => {
         if (!confirm(`確定要對 ${email} 執行 ${action} 嗎？`)) return;
 
         try {
-            await apiService.call('admin/updateUser', { targetEmail: email, action: action });
+            await apiService.call('admin/updateUser', {
+                targetEmail: email,
+                action: action
+            });
+
             showToast('更新成功');
-            Admin.loadUsers();
+            Admin.loadUsers(); // 重新整理列表
         } catch (e) {
-            showToast('更新失敗', 'error');
+            console.error(e);
+            showToast('更新失敗: ' + e.message, 'error');
         }
     }
 };
 
+// 掛載到 window 供 onclick 呼叫
 window.Admin = Admin;
