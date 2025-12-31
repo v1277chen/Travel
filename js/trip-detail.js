@@ -60,7 +60,18 @@ const TripDetail = {
         const { trip, days } = TripDetail.state;
 
         // 1. 更新 Header 資訊 (標題, 日期)
-        $('#trip-detail-title').textContent = trip.title;
+        // 1. 更新 Header 資訊 (標題, 日期, 刪除按鈕)
+        const headerContainer = document.getElementById('trip-detail-header-info'); // 假設 HTML 有此 ID，若無則需動態建立
+        // 由於 HTML 結構較簡單，我們直接修改 #trip-detail-content 內部的渲染邏輯
+
+        // 這裡我們不直接操作 #trip-detail-title，而是連同 Header 一起重新渲染在 Content Area 上方，或者更新既有 DOM
+        // 為了簡單起見，我們假設 #trip-detail-title 和 #trip-detail-dates 是在 index.html 的固定位置
+        $('#trip-detail-title').innerHTML = `
+            ${escapeHtml(trip.title)}
+            <button onclick="TripDetail.deleteTrip()" class="ml-4 text-gray-400 hover:text-red-500 text-lg" title="刪除整個行程">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        `;
         $('#trip-detail-dates').textContent = `${Trip.formatDate(trip.start_date)} - ${Trip.formatDate(trip.end_date)}`;
 
         const container = $('#trip-detail-content');
@@ -325,6 +336,23 @@ const TripDetail = {
         } finally {
             btn.disabled = false;
             btn.textContent = '儲存';
+        }
+    },
+
+    /**
+     * 刪除整個行程 (Delete Trip from Detail Page)
+     */
+    deleteTrip: async () => {
+        if (!confirm('確定要刪除這個行程嗎？此動作無法復原。')) return;
+
+        try {
+            await apiService.call('trip/delete', { trip_id: TripDetail.state.tripId });
+            showToast('行程已刪除');
+            // 刪除後返回儀表板
+            App.router.navigate('dashboard');
+        } catch (e) {
+            console.error(e);
+            showToast('刪除失敗: ' + e.message, 'error');
         }
     }
 };
