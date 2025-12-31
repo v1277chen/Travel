@@ -103,10 +103,19 @@ function doPost(e) {
         result = TripService.deleteTrip(currentUser, payload); 
         break;
       
-      // === 行程項目功能 (Trip Item Module - 預留) ===
-      // case 'trip/addItem': result = TripService.addItem(currentUser, payload); break;
-      // case 'trip/updateItem': result = TripService.updateItem(currentUser, payload); break;
-      // case 'trip/deleteItem': result = TripService.deleteItem(currentUser, payload); break;
+      // === 行程項目功能 (Trip Item Module) ===
+      case 'trip/addItem': 
+        // 新增行程項目
+        result = TripService.addItem(currentUser, payload); 
+        break;
+      case 'trip/updateItem': 
+        // 更新行程項目
+        result = TripService.updateItem(currentUser, payload); 
+        break;
+      case 'trip/deleteItem': 
+        // 刪除行程項目
+        result = TripService.deleteItem(currentUser, payload); 
+        break;
       
       default:
         // 若找不到對應的 action，回傳 404 錯誤
