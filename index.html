@@ -466,35 +466,7 @@
         function openCreateTripModal() {
             document.getElementById('create-trip-modal').classList.add('active');
         }
-
-        async function handleCreateTrip(e) {
-            e.preventDefault();
-            // ... (Logic moved to app.js dashboard module or similar, but for now we kept it here or in app.js)
-            // Wait, we defined handleCreateTrip in app.js? No, in the inline script of Step 70. 
-            // In the new modular design, I haven't widely exposed handleCreateTrip to window.
-            // Let's add a bridge here or ensure app.js handles it.
-            // Actually, in Step 79's app.js, I didn't export handleCreateTrip. 
-            // I should stick to the plan: modular files. 
-            // I will implement handleCreateTrip in index.html script block temporarily or assume app.js has it attached to window?
-            // Checking App.js content in Step 79... it didn't have handleCreateTrip.
-            // Checking Step 70... it had it.
-            // I should put handleCreateTrip in Dashboard logic in app.js and expose it.
-
-            // For now, to make the form work, let's just log it or implement simple call.
-            // Or better, let's rely on the previous logic but I need to make sure `api` is available.
-
-            const data = {
-                title: $('#new-trip-title').value,
-                description: $('#new-trip-desc').value,
-                start_date: $('#new-trip-date').value
-            };
-            try {
-                // Trip functionality is not yet implemented in backend properly, but call API anyway
-                // await api.call('createTrip', data);
-                showToast('行程建立功能尚未實作後端', 'error');
-                document.getElementById('create-trip-modal').classList.remove('active');
-            } catch (e) { console.error(e); }
-        }
+        // Note: handleCreateTrip is now handled by js/trip.js
     </script>
 </body>
 

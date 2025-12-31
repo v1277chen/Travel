@@ -58,28 +58,12 @@ const App = {
 
 const Dashboard = {
     init: async () => {
-        $('#trip-list').innerHTML = '<div class="spinner"></div>';
-        try {
-            // 目前後端可能尚未實作 getTrips，這裡會失敗
-            // const trips = await apiService.call('getTrips');
-            const trips = []; // 暫時假資料
-            Dashboard.render(trips);
-        } catch (e) {
-            $('#trip-list').innerHTML = '<p class="text-center">載入失敗</p>';
+        // 使用 Trip 模組初始化
+        if (window.Trip) {
+            await Trip.initDashboard();
+        } else {
+            console.error('Trip module not loaded');
         }
-    },
-
-    render: (trips) => {
-        const container = $('#trip-list');
-        if (trips.length === 0) {
-            container.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                    <p>目前沒有任何行程。</p>
-                    <button class="btn btn-primary" onclick="openCreateTripModal()">建立新行程</button>
-                </div>`;
-            return;
-        }
-        // ...
     }
 };
 
