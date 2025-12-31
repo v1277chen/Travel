@@ -11,9 +11,10 @@ const Auth = {
         try {
             const credential = response.credential;
             // 呼叫後端登入
-            const user = await api.call('login', { token: credential }); // 修正：傳送 token 參數
+            // 注意：這裡傳入 credential，apiService 會將其放入 root token
+            const user = await apiService.call('login', { credential: credential });
 
-            // 補上 credential 以便後續 API 呼叫使用 (注意安全性與過期問題)
+            // 補上 credential 以便後續 API 呼叫使用
             user.credential = credential;
 
             localStorage.setItem('travel_user', JSON.stringify(user));
@@ -24,14 +25,16 @@ const Auth = {
 
         } catch (e) {
             console.error(e);
-            showToast('登入失敗', 'error');
+            showToast('登入失敗: ' + e.message, 'error');
         }
     },
 
     logout: () => {
         localStorage.removeItem('travel_user');
         App.user = null;
-        if (window.google) google.accounts.id.disableAutoSelect();
+        if (window.google && google.accounts && google.accounts.id) {
+            google.accounts.id.disableAutoSelect();
+        }
         App.router.navigate('login');
         showToast('已登出');
     },
@@ -46,5 +49,4 @@ const Auth = {
     }
 };
 
-// 全域掛載以便 Google Callback 呼叫
 window.handleGoogleLogin = Auth.handleGoogleLogin;

@@ -5,7 +5,6 @@
 
 const Admin = {
     init: async () => {
-        // 渲染管理員面板結構
         const container = $('#admin-content');
         if (!container) return;
 
@@ -37,7 +36,7 @@ const Admin = {
 
     loadUsers: async () => {
         try {
-            const users = await api.call('admin/getUsers');
+            const users = await apiService.call('admin/getUsers');
             Admin.renderUsers(users);
         } catch (e) {
             $('#user-list-body').innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">載入失敗: ${e.message}</td></tr>`;
@@ -91,7 +90,7 @@ const Admin = {
         if (!confirm(`確定要對 ${email} 執行 ${action} 嗎？`)) return;
 
         try {
-            await api.call('admin/updateUser', { targetEmail: email, action: action });
+            await apiService.call('admin/updateUser', { targetEmail: email, action: action });
             showToast('更新成功');
             Admin.loadUsers();
         } catch (e) {
@@ -100,5 +99,4 @@ const Admin = {
     }
 };
 
-// 掛載到 window 以便 onclick 呼叫
 window.Admin = Admin;

@@ -1,11 +1,14 @@
 /**
  * js/api.js
- * API 通訊層
+ * API 服務模組 (apiService)
+ * 負責統一封裝 API 呼叫、Auth Token 附加與錯誤處理。
  */
 
-const api = {
+const apiService = {
     /**
      * 呼叫後端 API
+     * @param {string} action - 動作名稱
+     * @param {Object} data - 資料內容 (將被包裝在 payload 中)
      */
     call: async (action, data = {}) => {
         showLoading(true);
@@ -15,30 +18,36 @@ const api = {
             }
 
             const user = JSON.parse(localStorage.getItem('travel_user') || 'null');
-            const token = user ? user.auth_token : null;
 
-            // 這裡假設後端接收的是 ID Token (Credential)
-            // 在 Google Identity Services 流程中，登入時會拿到 credential
-            // 但後續 API 呼叫，我們應該使用該 credential (如果未過期) 或者後端發的 session token?
-            // 為了簡化，本範例中，後端 verifyGoogleToken 需要 ID Token。
-            // 但 ID Token 有效期短 (1小時)。
-            // **修正策略**：登入時後端回傳 user 物件。
-            // 實務上應該要有一套 Session 機制。
-            // 這裡暫時假設：每次操作「不」重新驗證 Google Token，或是 User 物件裡存有可用 Token。
-            // (註：正規做法是前端 Silent Refresh 取得新 ID Token，或後端發自定義 Token)
+            // 建構請求本體 (符合後端 Code.gs 要求)
+            const requestBody = {
+                action: action,
+                token: null, // 預設 null
+                payload: data // 將資料包裝在 payload 屬性中
+            };
 
-            // 為了讓範例能跑，我們假設 request payload 裡攜帶的 token 是 user.credential (存在 localStorage)
-            // 注意：這在 token 過期後會失效。
+            // 自動附加 Token
+            // 1. 若是登入動作，Token 通常在 data.credential 中，但為了統一，我們也可以將其視為 payload
+            //    不過後端 'login' action 特殊處理，是直接解 token 或從 payload 解?
+            //    Code.gs: const token = params.token;
+            //    所以我們必須確保 token 放在 root level。
 
-            const payload = { ...data, action };
-            if (user && user.credential) {
-                payload.token = user.credential;
+            if (action === 'login') {
+                // 登入時，data 裡應該有 credential
+                if (data.credential) {
+                    requestBody.token = data.credential;
+                }
+            } else {
+                // 一般請求，使用儲存的 credential
+                if (user && user.credential) {
+                    requestBody.token = user.credential;
+                }
             }
 
             const response = await fetch(CONFIG.API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(requestBody)
             });
 
             const result = await response.json();
@@ -47,13 +56,22 @@ const api = {
             if (result.status === 'success') {
                 return result.data;
             } else {
+                // 若 Token 失效，自動登出
+                if (result.message === 'Unauthorized' || result.message === 'Invalid Token') {
+                    if (action !== 'login') {
+                        Auth.logout();
+                    }
+                }
                 throw new Error(result.message || 'API Error');
             }
         } catch (err) {
             showLoading(false);
-            console.error('API Call Error:', err);
+            console.error('apiService Error:', err);
             showToast(err.message, 'error');
             throw err;
         }
     }
 };
+
+// 為了相容性或方便偵錯，掛載到 window
+window.apiService = apiService;
