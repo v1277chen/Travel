@@ -11,8 +11,8 @@ const Auth = {
         try {
             const credential = response.credential;
             // 呼叫後端登入
-            // 注意：這裡傳入 credential，apiService 會將其放入 root token
-            const user = await apiService.call('login', { credential: credential });
+            const responseData = await apiService.call('login', { credential: credential });
+            const user = responseData.user; // 從包裝中取出 user
 
             // 補上 credential 以便後續 API 呼叫使用
             user.credential = credential;
