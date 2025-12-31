@@ -92,13 +92,22 @@
         }
 
         /* 標題與文字 (Typography) */
-        h1, h2, h3 {
+        h1,
+        h2,
+        h3 {
             color: var(--text-main);
             margin-bottom: 0.5rem;
         }
 
-        h1 { font-size: 2rem; font-weight: 700; }
-        h2 { font-size: 1.5rem; font-weight: 600; }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
 
         p {
             color: var(--text-muted);
@@ -152,15 +161,16 @@
         .btn-danger:hover {
             background-color: #fecaca;
         }
-        
+
         .btn-success {
             background-color: #d1fae5;
             color: var(--success-color);
         }
+
         .btn-success:hover {
             background-color: #a7f3d0;
         }
-        
+
         .btn-sm {
             padding: 0.25rem 0.5rem;
             font-size: 0.8rem;
@@ -228,8 +238,10 @@
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
-        
-        .text-center { text-align: center; }
+
+        .text-center {
+            text-align: center;
+        }
 
         /* 載入中動畫 (Loading Spinner) */
         .spinner {
@@ -323,7 +335,9 @@
         <nav class="navbar">
             <a href="#" class="nav-brand">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
                     <path d="M15 10l5 5"></path>
                 </svg>
                 TravelPlanner
@@ -339,9 +353,10 @@
 
         <!-- 主要內容區 (Main Content) -->
         <main class="main-content">
-            
+
             <!-- Global Loader -->
-            <div id="global-loader" class="spinner hidden" style="position:fixed; top:50%; left:50%; margin-top:-1rem; margin-left:-1rem; z-index:9999;"></div>
+            <div id="global-loader" class="spinner hidden"
+                style="position:fixed; top:50%; left:50%; margin-top:-1rem; margin-left:-1rem; z-index:9999;"></div>
 
             <!-- 1. 登入畫面 (Login View) -->
             <section id="view-login" class="view-section hidden">
@@ -366,7 +381,7 @@
                 </div>
                 <div id="trip-list" class="grid-trips"></div>
             </section>
-            
+
             <!-- 3. 管理員後台 (Admin View) -->
             <section id="view-admin" class="view-section hidden">
                 <div class="flex-between mb-4">
@@ -383,7 +398,8 @@
                 <button class="btn btn-secondary mb-4" onclick="navigateTo('dashboard')">← 返回列表</button>
                 <div id="detail-loading" class="spinner"></div>
                 <div id="detail-content" class="hidden">
-                    <div class="card mb-4" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); color: white;">
+                    <div class="card mb-4"
+                        style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); color: white;">
                         <h2 id="d-title" style="color:white; margin-bottom: 0.5rem">行程標題</h2>
                         <p id="d-meta" style="color: rgba(255,255,255,0.8)">時間 - 说明</p>
                     </div>
@@ -405,7 +421,8 @@
         <div class="modal-container">
             <div class="modal-header">
                 <h3>建立新行程</h3>
-                <button class="close-btn" onclick="document.getElementById('create-trip-modal').classList.remove('active')">&times;</button>
+                <button class="close-btn"
+                    onclick="document.getElementById('create-trip-modal').classList.remove('active')">&times;</button>
             </div>
             <form onsubmit="handleCreateTrip(event)">
                 <div class="modal-body">
@@ -415,7 +432,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">描述</label>
-                        <textarea id="new-trip-desc" class="form-control" rows="3" placeholder="簡單描述這次的旅行亮點..."></textarea>
+                        <textarea id="new-trip-desc" class="form-control" rows="3"
+                            placeholder="簡單描述這次的旅行亮點..."></textarea>
                     </div>
                     <div class="form-group">
                         <label class="form-label">開始日期</label>
@@ -423,7 +441,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('create-trip-modal').classList.remove('active')">取消</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="document.getElementById('create-trip-modal').classList.remove('active')">取消</button>
                     <button type="submit" class="btn btn-primary">確認建立</button>
                 </div>
             </form>
@@ -432,21 +451,21 @@
 
     <!-- Google Identity Services Script -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    
+
     <!-- Modular JS -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/app.js"></script>
-    
+    <script src="js/config.js?v=2"></script>
+    <script src="js/utils.js?v=2"></script>
+    <script src="js/api.js?v=2"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/admin.js?v=2"></script>
+    <script src="js/app.js?v=2"></script>
+
     <script>
         // Modal Helper
         function openCreateTripModal() {
             document.getElementById('create-trip-modal').classList.add('active');
         }
-        
+
         async function handleCreateTrip(e) {
             e.preventDefault();
             // ... (Logic moved to app.js dashboard module or similar, but for now we kept it here or in app.js)
@@ -459,10 +478,10 @@
             // Checking App.js content in Step 79... it didn't have handleCreateTrip.
             // Checking Step 70... it had it.
             // I should put handleCreateTrip in Dashboard logic in app.js and expose it.
-            
+
             // For now, to make the form work, let's just log it or implement simple call.
             // Or better, let's rely on the previous logic but I need to make sure `api` is available.
-            
+
             const data = {
                 title: $('#new-trip-title').value,
                 description: $('#new-trip-desc').value,
@@ -473,8 +492,9 @@
                 // await api.call('createTrip', data);
                 showToast('行程建立功能尚未實作後端', 'error');
                 document.getElementById('create-trip-modal').classList.remove('active');
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
     </script>
 </body>
+
 </html>
