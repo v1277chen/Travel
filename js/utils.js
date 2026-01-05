@@ -18,8 +18,10 @@ const $all = (selector) => document.querySelectorAll(selector);
  * @returns {string} 安全的 HTML 字串
  */
 function escapeHtml(unsafe) {
-    if (!unsafe) return '';
-    return unsafe
+    if (unsafe === null || unsafe === undefined) return '';
+    // 確保轉換為字串，避免非字串類型導致 replace is not a function 錯誤
+    const str = String(unsafe);
+    return str
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
