@@ -377,7 +377,34 @@ const TripDetail = {
         $('#edit-trip-end-date').value = trip.end_date.substring(0, 10);
         $('#edit-trip-desc').value = trip.description || '';
 
+        // 設定可見性 Radio Button
+        const visibility = trip.visibility || 'private';
+        const radioBtn = document.querySelector(`input[name="edit-trip-visibility"][value="${visibility}"]`);
+        if (radioBtn) radioBtn.checked = true;
+
+        // 處理分享連結顯示
+        const shareLinkSection = $('#share-link-section');
+        const shareLinkInput = $('#share-link-input');
+        if (visibility === 'public') {
+            // 產生分享連結
+            const shareUrl = `${window.location.origin}${window.location.pathname}#shared/${trip.trip_id}`;
+            shareLinkInput.value = shareUrl;
+            shareLinkSection.classList.remove('hidden');
+        } else {
+            shareLinkSection.classList.add('hidden');
+        }
+
         $('#edit-trip-modal').classList.remove('hidden');
+    },
+
+    /**
+     * 複製分享連結到剪貼簿
+     */
+    copyShareLink: () => {
+        const shareLinkInput = $('#share-link-input');
+        shareLinkInput.select();
+        document.execCommand('copy');
+        showToast('連結已複製');
     },
 
     /**
@@ -391,12 +418,15 @@ const TripDetail = {
 
         try {
             const tripId = $('#edit-trip-id').value;
+            const visibility = document.querySelector('input[name="edit-trip-visibility"]:checked')?.value || 'private';
+
             const payload = {
                 trip_id: tripId,
                 title: $('#edit-trip-title').value,
                 start_date: $('#edit-trip-start-date').value,
                 end_date: $('#edit-trip-end-date').value,
-                description: $('#edit-trip-desc').value
+                description: $('#edit-trip-desc').value,
+                visibility: visibility  // 公開或私密
             };
 
             await apiService.call('trip/update', payload);

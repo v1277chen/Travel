@@ -18,7 +18,8 @@ const App = {
         'login': 'login-view',
         'dashboard': 'dashboard-view',
         'trip-detail': 'trip-detail-view',
-        'admin': 'admin-view'
+        'admin': 'admin-view',
+        'shared': 'shared-view'  // 公開行程瀏覽頁 (不需登入)
     },
 
     /**
@@ -54,13 +55,14 @@ const App = {
             App.updateNavbar();
 
             // 4. 路由守衛 (Route Guard)
-            // 檢查權限，若未登入且嘗試存取保護頁面，強制轉到登入頁
-            if (page !== 'login' && !App.user) {
+            // 公開行程頁面 (shared) 不需登入即可訪問
+            const publicPages = ['login', 'shared'];
+            if (!publicPages.includes(page) && !App.user) {
                 return App.router.navigate('login');
             }
 
             // 檢查 Admin 權限
-            if (page === 'admin' && App.user.role !== 'admin') {
+            if (page === 'admin' && App.user && App.user.role !== 'admin') {
                 showToast('權限不足', 'error');
                 return App.router.navigate('dashboard');
             }
@@ -78,6 +80,11 @@ const App = {
                         TripDetail.init(params); // 改用 TripDetail 模組初始化
                     }
                     break;
+                case 'shared':
+                    if (params) {
+                        SharedTrip.init(params); // 載入公開行程
+                    }
+                    break;
             }
         }
     },
@@ -87,7 +94,17 @@ const App = {
      * 在 DOMContentLoaded 時執行。
      */
     init: () => {
-        // 檢查是否有儲存的登入狀態
+        // 1. 檢查 URL Hash 是否為分享連結
+        const hash = window.location.hash;
+        if (hash.startsWith('#shared/')) {
+            // 公開行程分享連結格式: #shared/TRIP_ID
+            const tripId = hash.replace('#shared/', '');
+            if (tripId) {
+                return App.router.navigate('shared', tripId);
+            }
+        }
+
+        // 2. 檢查是否有儲存的登入狀態
         if (Auth.checkLogin()) {
             // 若已登入，導向儀表板
             App.router.navigate('dashboard');

@@ -87,7 +87,12 @@ const Trip = {
 
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-2">
-                    <h3 class="text-xl font-bold text-gray-800">${escapeHtml(trip.title)}</h3>
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-xl font-bold text-gray-800">${escapeHtml(trip.title)}</h3>
+                        ${trip.visibility === 'public'
+                    ? '<span class="text-green-500" title="公開行程"><i class="fas fa-globe"></i></span>'
+                    : '<span class="text-gray-400" title="私密行程"><i class="fas fa-lock"></i></span>'}
+                    </div>
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">
                             ${trip.status}
@@ -133,12 +138,15 @@ const Trip = {
             const startDate = $('#new-trip-start-date').value;
             const endDate = $('#new-trip-end-date')?.value || startDate; // 若無結束日期預設同開始日期
             const desc = $('#new-trip-desc').value;
+            // 取得公開/私密選項
+            const visibility = document.querySelector('input[name="new-trip-visibility"]:checked')?.value || 'private';
 
             const payload = {
                 title: title,
                 start_date: startDate,
                 end_date: endDate,
-                description: desc
+                description: desc,
+                visibility: visibility  // 公開或私密
             };
 
             // 呼叫 API: trip/create

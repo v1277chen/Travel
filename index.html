@@ -224,6 +224,36 @@
             </div>
         </div>
 
+        <!-- 
+            VIEW 5: Shared Trip (公開行程瀏覽頁 - 不需登入) 
+        -->
+        <div id="shared-view" class="hidden">
+            <!-- Header -->
+            <div class="flex items-center mb-6 border-b pb-4">
+                <div class="mr-4 text-green-600">
+                    <i class="fas fa-globe text-2xl"></i>
+                </div>
+                <div>
+                    <h2 id="shared-trip-title" class="text-2xl font-bold text-gray-900">公開行程</h2>
+                    <p id="shared-trip-dates" class="text-sm text-gray-500 mt-1">YYYY-MM-DD - YYYY-MM-DD</p>
+                </div>
+            </div>
+
+            <!-- Content Container -->
+            <div id="shared-content">
+                <!-- Javascript will load content here -->
+            </div>
+
+            <!-- Footer: CTA -->
+            <div class="mt-8 bg-indigo-50 rounded-lg p-6 text-center">
+                <p class="text-gray-600 mb-3">想要規劃自己的行程嗎？</p>
+                <a href="#" onclick="App.router.navigate('login'); return false;"
+                    class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow transition">
+                    <i class="fas fa-plane-departure mr-2"></i>開始規劃
+                </a>
+            </div>
+        </div>
+
     </main>
 
     <!-- === Modal: Create Trip (建立行程彈窗) === -->
@@ -259,11 +289,32 @@
                     </div>
                 </div>
 
-                <div class="mb-6">
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">描述 (選填)</label>
                     <textarea id="new-trip-desc" rows="3"
                         class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                         placeholder="簡單描述這次的旅行..."></textarea>
+                </div>
+
+                <!-- 公開/私密選項 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">可見性</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="new-trip-visibility" value="private" checked
+                                class="mr-2 accent-indigo-600">
+                            <i class="fas fa-lock text-gray-500 mr-1"></i>
+                            <span>私密</span>
+                            <span class="text-xs text-gray-400 ml-1">(僅自己可見)</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="new-trip-visibility" value="public"
+                                class="mr-2 accent-indigo-600">
+                            <i class="fas fa-globe text-green-500 mr-1"></i>
+                            <span>公開</span>
+                            <span class="text-xs text-gray-400 ml-1">(可分享連結)</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-3">
@@ -299,10 +350,42 @@
                             class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                     </div>
                 </div>
-                <div class="mb-6">
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">描述</label>
                     <textarea id="edit-trip-desc" rows="3"
                         class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                </div>
+
+                <!-- 公開/私密選項 -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">可見性</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="edit-trip-visibility" value="private"
+                                class="mr-2 accent-indigo-600">
+                            <i class="fas fa-lock text-gray-500 mr-1"></i>
+                            <span>私密</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="edit-trip-visibility" value="public"
+                                class="mr-2 accent-indigo-600">
+                            <i class="fas fa-globe text-green-500 mr-1"></i>
+                            <span>公開</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 分享連結 (公開時顯示) -->
+                <div id="share-link-section" class="mb-6 hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">分享連結</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="share-link-input" readonly
+                            class="flex-1 border border-gray-300 rounded px-3 py-2 bg-gray-50 text-sm">
+                        <button type="button" onclick="TripDetail.copyShareLink()"
+                            class="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-sm">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="document.getElementById('edit-trip-modal').classList.add('hidden')"
@@ -405,15 +488,16 @@
 
     <!-- === Scripts (模組化載入) === -->
     <!-- 注意載入順序：Config -> Utils -> API -> 模組 -> App -->
-    <!-- 使用 query string ?v=4 來避免瀏覽器快取舊檔案 -->
-    <script src="js/config.js?v=4"></script>
-    <script src="js/utils.js?v=4"></script>
-    <script src="js/api.js?v=4"></script>
-    <script src="js/auth.js?v=4"></script>
-    <script src="js/admin.js?v=4"></script>
-    <script src="js/trip.js?v=4"></script>
-    <script src="js/trip-detail.js?v=4"></script>
-    <script src="js/app.js?v=4"></script>
+    <!-- 使用 query string ?v=5 來避免瀏覽器快取舊檔案 -->
+    <script src="js/config.js?v=5"></script>
+    <script src="js/utils.js?v=5"></script>
+    <script src="js/api.js?v=5"></script>
+    <script src="js/auth.js?v=5"></script>
+    <script src="js/admin.js?v=5"></script>
+    <script src="js/trip.js?v=5"></script>
+    <script src="js/trip-detail.js?v=5"></script>
+    <script src="js/shared-trip.js?v=5"></script>
+    <script src="js/app.js?v=5"></script>
 
 </body>
 
