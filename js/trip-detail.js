@@ -217,6 +217,17 @@ const TripDetail = {
                         ${item.cost ? `<span class="flex items-center"><i class="fas fa-coins mr-1 text-gray-400"></i> $${item.cost}</span>` : ''}
                     </div>
                     
+                    ${item.link_url ? `
+                    <div class="mt-2">
+                        <a href="${escapeHtml(item.link_url)}" target="_blank" rel="noopener noreferrer" 
+                           class="inline-flex items-center text-sm text-green-600 hover:text-green-800 hover:underline bg-green-50 px-3 py-1.5 rounded-full transition">
+                            <i class="fas fa-map-marked-alt mr-1.5"></i>
+                            在 Google Maps 中開啟
+                            <i class="fas fa-external-link-alt ml-1.5 text-xs"></i>
+                        </a>
+                    </div>
+                    ` : ''}
+                    
                     ${item.notes ? `<p class="text-sm text-gray-500 mt-2 bg-gray-50 p-2 rounded">${escapeHtml(item.notes)}</p>` : ''}
                 </div>
             `;
@@ -258,6 +269,7 @@ const TripDetail = {
         $('#item-start-time').value = item.start_time || '';
         $('#item-end-time').value = item.end_time || '';
         $('#item-cost').value = item.cost || '';
+        $('#item-link-url').value = item.link_url || '';  // Google Maps 連結
         $('#item-notes').value = item.notes || '';
 
         $('#item-modal').classList.remove('hidden');
@@ -308,6 +320,7 @@ const TripDetail = {
                 start_time: $('#item-start-time').value,
                 end_time: $('#item-end-time').value,
                 cost: parseFloat($('#item-cost').value) || 0,
+                link_url: $('#item-link-url').value || '',  // Google Maps 連結
                 notes: $('#item-notes').value
             };
 
