@@ -213,7 +213,7 @@ const TripDetail = {
                     
                     <div class="text-sm text-gray-600 mt-1 flex flex-wrap gap-x-4 gap-y-1">
                         ${item.start_time ? `<span class="flex items-center"><i class="far fa-clock mr-1 text-gray-400"></i> ${item.start_time}${item.end_time ? ' - ' + item.end_time : ''}</span>` : ''}
-                        ${item.location ? `<span class="flex items-center"><i class="fas fa-map-pin mr-1 text-gray-400"></i> ${escapeHtml(item.location)}</span>` : ''}
+                        ${(item.location_address || item.location) ? `<span class="flex items-center"><i class="fas fa-map-pin mr-1 text-gray-400"></i> ${escapeHtml(item.location_address || item.location)}</span>` : ''}
                         ${item.cost ? `<span class="flex items-center"><i class="fas fa-coins mr-1 text-gray-400"></i> $${item.cost}</span>` : ''}
                     </div>
                     
@@ -254,7 +254,7 @@ const TripDetail = {
         // 填入資料
         $('#item-type').value = item.type;
         $('#item-name').value = item.name;
-        $('#item-location').value = item.location || '';
+        $('#item-location').value = item.location_address || item.location || '';
         $('#item-start-time').value = item.start_time || '';
         $('#item-end-time').value = item.end_time || '';
         $('#item-cost').value = item.cost || '';
