@@ -57,23 +57,42 @@ const SharedTrip = {
     },
 
     /**
-     * 呼叫公開行程 API
-     * 此 API 不需 Token，直接發送請求
+     * 呼叫公開行程 API (Fetch Public Trip API)
+     * 
+     * 此函式專門用於取得公開行程資料，不需要使用者登入或 Token 驗證。
+     * 透過 fetch 直接向後端發送請求，繞過 apiService 的 Token 附加邏輯。
+     * 
+     * @param {string} tripId - 要取得的行程 ID
+     * @returns {Promise<Object>} 回傳包含 { trip, days, items } 的物件
+     * @throws {Error} 當行程不存在或非公開時拋出錯誤
+     * 
+     * 錯誤處理說明：
+     * - 若行程不存在：後端回傳 errorCode，此函式拋出 '該行程不存在'
+     * - 若行程為私密：後端回傳 errorCode，此函式拋出 '無法存取此行程'
      */
     fetchPublicTrip: async (tripId) => {
-        const response = await fetch(API_BASE_URL, {
+        // 使用 CONFIG.API_URL 作為後端 API 端點
+        // 注意：此處不使用 apiService.call()，因為公開行程不需 Token
+        const response = await fetch(CONFIG.API_URL, {
             method: 'POST',
+            // 使用 application/json 直接傳遞 JSON 格式資料
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                action: 'trip/getPublic',
-                payload: { trip_id: tripId }
+                action: 'trip/getPublic',  // 呼叫後端的公開行程 API
+                payload: { trip_id: tripId }  // 傳遞行程 ID
             })
         });
 
+        // 解析 JSON 回應
         const result = await response.json();
+        
+        // 檢查後端回傳的錯誤碼
+        // 後端若發生錯誤，會回傳 { errorCode: true, message: '錯誤訊息' }
         if (result.errorCode) {
             throw new Error(result.message || '載入失敗');
         }
+        
+        // 回傳成功資料 { trip, days, items }
         return result;
     },
 
